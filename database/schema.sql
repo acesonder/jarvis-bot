@@ -344,7 +344,9 @@ INSERT INTO products (name, description, category, tile_color, font_color, stock
 ('Pipe Stems', 'Glass pipe stems', 'pipes', '#ff5722', '#ffffff', 100, 25, 'each'),
 ('Pipe Mouthpieces', 'Silicone mouthpieces', 'pipes', '#ff9800', '#ffffff', 200, 50, 'each');
 
--- Insert default admin user (password: admin123)
+-- NOTE: Default admin user for development only
+-- IMPORTANT: Change password immediately in production deployment
+-- Default password is 'admin123' - MUST be changed before production use
 INSERT INTO users (username, email, password_hash, first_name, last_name, role, status) VALUES
 ('admin', 'admin@tweakeasy.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System', 'Administrator', 'admin', 'active');
 

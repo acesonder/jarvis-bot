@@ -4,11 +4,11 @@
  * Harm Reduction Order & Case Management System
  */
 
-// Database configuration
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'tweak_easy');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+// Database configuration - Use environment variables in production
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_NAME', getenv('DB_NAME') ?: 'tweak_easy');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASS') ?: '');
 define('DB_CHARSET', 'utf8mb4');
 
 // Application configuration

@@ -30,7 +30,7 @@
                 <p>Sign in to access your dashboard</p>
             </div>
             
-            <form id="loginForm" class="auth-form" method="POST" action="login-handler.php">
+            <form id="loginForm" class="auth-form" method="POST" action="#" onsubmit="return handleLogin(event);">
                 <div class="form-group">
                     <label for="username" class="form-label">Username or Email</label>
                     <div class="input-wrapper">

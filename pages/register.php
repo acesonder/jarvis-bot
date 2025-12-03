@@ -30,7 +30,7 @@
                 <p>Join us to access harm reduction services</p>
             </div>
             
-            <form id="registerForm" class="auth-form" method="POST" action="register-handler.php">
+            <form id="registerForm" class="auth-form" method="POST" action="#" onsubmit="return handleRegister(event);">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="first_name" class="form-label">First Name</label>
