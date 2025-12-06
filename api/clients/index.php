@@ -45,7 +45,7 @@ switch ($requestMethod) {
                 $plan['goals'] = $db->fetchAll("
                     SELECT g.*, 
                            (SELECT COUNT(*) FROM milestones WHERE goal_id = g.id) as total_milestones,
-                           (SELECT COUNT(*) FROM milestones WHERE goal_id = g.id AND completed = TRUE) as completed_milestones
+                           (SELECT COUNT(*) FROM milestones WHERE goal_id = g.id AND completed = 1) as completed_milestones
                     FROM goals g WHERE g.care_plan_id = :plan_id
                 ", ['plan_id' => $plan['id']]);
             }

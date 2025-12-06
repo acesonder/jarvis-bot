@@ -22,7 +22,7 @@ switch ($requestMethod) {
             $count = $db->fetch("
                 SELECT COUNT(*) as count 
                 FROM messages 
-                WHERE recipient_id = :user_id AND is_read = FALSE
+                WHERE recipient_id = :user_id AND is_read = 0
             ", ['user_id' => $currentUserId])['count'];
             
             Response::success(['count' => $count]);
@@ -78,7 +78,7 @@ switch ($requestMethod) {
                 $where[] = "m.parent_message_id IS NULL";
             } elseif ($folder === 'urgent') {
                 $where[] = "m.recipient_id = :user_id";
-                $where[] = "m.is_urgent = TRUE";
+                $where[] = "m.is_urgent = 1";
             }
             
             $whereClause = implode(' AND ', $where);

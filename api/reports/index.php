@@ -162,7 +162,7 @@ switch ($requestMethod) {
                 SELECT 
                     status,
                     COUNT(*) as count,
-                    AVG(TIMESTAMPDIFF(HOUR, created_at, updated_at)) as avg_hours
+                    AVG((julianday(updated_at) - julianday(created_at)) * 24) as avg_hours
                 FROM orders
                 WHERE created_at BETWEEN :start_date AND :end_date
                 GROUP BY status
