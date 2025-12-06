@@ -205,3 +205,107 @@ class Response {
         exit;
     }
 }
+
+/**
+ * Rate limiter for API endpoints
+ */
+class RateLimiter {
+    private $db;
+    
+    public function __construct() {
+        $this->db = Database::getInstance();
+        $this->createTableIfNotExists();
+    }
+    
+    private function createTableIfNotExists() {
+        try {
+            $this->db->query("
+                CREATE TABLE IF NOT EXISTS rate_limits (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    identifier VARCHAR(100) NOT NULL,
+                    action VARCHAR(50) NOT NULL,
+                    attempts INT DEFAULT 1,
+                    window_start TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_identifier_action (identifier, action)
+                )
+            ");
+        } catch (Exception $e) {
+            error_log("Rate limiter table creation failed: " . $e->getMessage());
+        }
+    }
+    
+    public function check($identifier, $action, $maxAttempts, $windowSeconds) {
+        $windowStart = date('Y-m-d H:i:s', time() - $windowSeconds);
+        
+        // Clean old entries
+        $this->db->query(
+            "DELETE FROM rate_limits WHERE window_start < :window_start",
+            ['window_start' => $windowStart]
+        );
+        
+        // Check current attempts
+        $result = $this->db->fetch(
+            "SELECT SUM(attempts) as total FROM rate_limits 
+             WHERE identifier = :identifier AND action = :action AND window_start >= :window_start",
+            ['identifier' => $identifier, 'action' => $action, 'window_start' => $windowStart]
+        );
+        
+        $currentAttempts = $result['total'] ?? 0;
+        return $currentAttempts < $maxAttempts;
+    }
+    
+    public function increment($identifier, $action) {
+        $this->db->insert('rate_limits', [
+            'identifier' => $identifier,
+            'action' => $action,
+            'attempts' => 1
+        ]);
+    }
+}
+
+/**
+ * Password strength validator
+ */
+class PasswordValidator {
+    public static function isStrong($password) {
+        if (strlen($password) < PASSWORD_MIN_LENGTH) {
+            return false;
+        }
+        
+        // Check for uppercase
+        if (!preg_match('/[A-Z]/', $password)) {
+            return false;
+        }
+        
+        // Check for lowercase
+        if (!preg_match('/[a-z]/', $password)) {
+            return false;
+        }
+        
+        // Check for number
+        if (!preg_match('/[0-9]/', $password)) {
+            return false;
+        }
+        
+        // Check for special character
+        if (!preg_match('/[^A-Za-z0-9]/', $password)) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public static function getStrength($password) {
+        $strength = 0;
+        $length = strlen($password);
+        
+        if ($length >= 8) $strength += 1;
+        if ($length >= 12) $strength += 1;
+        if (preg_match('/[a-z]/', $password)) $strength += 1;
+        if (preg_match('/[A-Z]/', $password)) $strength += 1;
+        if (preg_match('/[0-9]/', $password)) $strength += 1;
+        if (preg_match('/[^A-Za-z0-9]/', $password)) $strength += 1;
+        
+        return min($strength, 5); // 0-5 scale
+    }
+}
