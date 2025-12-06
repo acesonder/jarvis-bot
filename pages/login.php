@@ -1,3 +1,9 @@
+<?php
+require_once __DIR__ . '/../config/config.php';
+Session::start();
+$loginError = Session::get('login_error', '');
+Session::remove('login_error');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,9 +34,14 @@
                 </a>
                 <h1>Welcome Back</h1>
                 <p>Sign in to access your dashboard</p>
+                <?php if ($loginError): ?>
+                <div style="background: #fee; border: 1px solid #fcc; color: #c33; padding: 10px; border-radius: 5px; margin-top: 10px;">
+                    <?php echo htmlspecialchars($loginError); ?>
+                </div>
+                <?php endif; ?>
             </div>
             
-            <form id="loginForm" class="auth-form" method="POST" action="#" onsubmit="return handleLogin(event);">
+            <form id="loginForm" class="auth-form" method="POST" action="login_handler.php">
                 <div class="form-group">
                     <label for="username" class="form-label">Username or Email</label>
                     <div class="input-wrapper">
@@ -120,25 +131,6 @@
             const input = document.getElementById(inputId);
             input.type = input.type === 'password' ? 'text' : 'password';
         }
-        
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (window.TweakEasy.FormValidator.validate(this)) {
-                window.TweakEasy.Loading.show();
-                
-                // Simulate login
-                setTimeout(() => {
-                    window.TweakEasy.Loading.hide();
-                    window.TweakEasy.Notifications.success('Login successful! Redirecting...');
-                    
-                    // In real app, redirect based on user role
-                    setTimeout(() => {
-                        window.location.href = 'client/dashboard.php';
-                    }, 1500);
-                }, 1000);
-            }
-        });
     </script>
 </body>
 </html>

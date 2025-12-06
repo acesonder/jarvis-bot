@@ -1,16 +1,20 @@
 <?php
 /**
- * Tweak Easy - SQLite Configuration (for development/testing)
+ * Tweak Easy - Database Configuration
  * Harm Reduction Order & Case Management System
  */
 
-// Database configuration - SQLite
-define('DB_PATH', __DIR__ . '/../database/tweak_easy.db');
+// Database configuration - Use environment variables in production
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_NAME', getenv('DB_NAME') ?: 'tweak_easy');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASS') ?: '');
+define('DB_CHARSET', 'utf8mb4');
 
 // Application configuration
 define('APP_NAME', 'Tweak Easy');
 define('APP_VERSION', '1.0.0');
-define('APP_URL', 'http://localhost:8000');
+define('APP_URL', 'http://localhost/tweak-easy');
 define('APP_TIMEZONE', 'America/Los_Angeles');
 
 // Security settings
@@ -27,7 +31,7 @@ define('UPLOAD_DIR', __DIR__ . '/../assets/uploads/');
 date_default_timezone_set(APP_TIMEZONE);
 
 /**
- * Database connection class using PDO with SQLite
+ * Database connection class using PDO
  */
 class Database {
     private static $instance = null;
@@ -35,9 +39,13 @@ class Database {
     
     private function __construct() {
         try {
-            $this->pdo = new PDO("sqlite:" . DB_PATH);
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
+            $options = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false,
+            ];
+            $this->pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
         } catch (PDOException $e) {
             error_log("Database connection failed: " . $e->getMessage());
             throw new Exception("Database connection failed. Please check configuration.");
@@ -213,14 +221,14 @@ class RateLimiter {
         try {
             $this->db->query("
                 CREATE TABLE IF NOT EXISTS rate_limits (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    identifier TEXT NOT NULL,
-                    action TEXT NOT NULL,
-                    attempts INTEGER DEFAULT 1,
-                    window_start TEXT DEFAULT CURRENT_TIMESTAMP
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    identifier VARCHAR(100) NOT NULL,
+                    action VARCHAR(50) NOT NULL,
+                    attempts INT DEFAULT 1,
+                    window_start TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_identifier_action (identifier, action)
                 )
             ");
-            $this->db->query("CREATE INDEX IF NOT EXISTS idx_identifier_action ON rate_limits(identifier, action)");
         } catch (Exception $e) {
             error_log("Rate limiter table creation failed: " . $e->getMessage());
         }
