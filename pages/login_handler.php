@@ -25,7 +25,18 @@ if (empty($username) || empty($password)) {
 // Attempt login
 $auth = new Auth();
 $rateLimiter = new RateLimiter();
-$ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+
+// Get IP address with proxy support
+$ipAddress = 'unknown';
+if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    // Get first IP from X-Forwarded-For chain (client IP)
+    $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+    $ipAddress = trim($ips[0]);
+} elseif (!empty($_SERVER['HTTP_X_REAL_IP'])) {
+    $ipAddress = $_SERVER['HTTP_X_REAL_IP'];
+} elseif (!empty($_SERVER['REMOTE_ADDR'])) {
+    $ipAddress = $_SERVER['REMOTE_ADDR'];
+}
 
 // Rate limiting: 5 attempts per minute
 if (!$rateLimiter->check($ipAddress, 'login', 5, 60)) {

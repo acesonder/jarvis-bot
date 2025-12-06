@@ -23,7 +23,7 @@ switch ($requestMethod) {
             
             $products = $db->fetchAll("
                 SELECT * FROM products 
-                WHERE stock_quantity <= reorder_level AND is_active = TRUE
+                WHERE stock_quantity <= reorder_level AND is_active = 1
                 ORDER BY stock_quantity ASC
             ");
             

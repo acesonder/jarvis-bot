@@ -10,7 +10,17 @@ $db = Database::getInstance();
 
 // Rate limiting check
 $rateLimiter = new RateLimiter();
-$ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+
+// Get IP address with proxy support
+$ipAddress = 'unknown';
+if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+    $ipAddress = trim($ips[0]);
+} elseif (!empty($_SERVER['HTTP_X_REAL_IP'])) {
+    $ipAddress = $_SERVER['HTTP_X_REAL_IP'];
+} elseif (!empty($_SERVER['REMOTE_ADDR'])) {
+    $ipAddress = $_SERVER['REMOTE_ADDR'];
+}
 
 switch ($requestMethod) {
     case 'POST':

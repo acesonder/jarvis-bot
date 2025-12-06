@@ -341,9 +341,10 @@ INSERT INTO products (name, description, category, tile_color, font_color, stock
 ('Pipe Mouthpieces', 'Silicone mouthpieces', 'pipes', '#ff9800', '#ffffff', 200, 50, 'each');
 
 -- Insert default admin user
--- Password: Admin@123
+-- Password: Admin@123 (CHANGE THIS IMMEDIATELY IN PRODUCTION!)
+-- This is a secure hash generated specifically for this application
 INSERT INTO users (username, email, password_hash, first_name, last_name, role, status) VALUES
-('admin', 'admin@tweakeasy.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System', 'Administrator', 'admin', 'active');
+('admin', 'admin@tweakeasy.org', '$2y$10$A0XipHMG2wmZppoJz4uMkOXQshp19puyT57JN7AkUNlF7Ahz68Wcy', 'System', 'Administrator', 'admin', 'active');
 
 -- Insert sample service providers
 INSERT INTO service_providers (name, category, description, address, city, state, zip_code, phone, email, services_offered, is_emergency) VALUES

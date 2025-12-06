@@ -96,16 +96,16 @@ switch ($requestMethod) {
         } elseif ($action === 'demographics') {
             // Client demographics report
             
-            // Age distribution
+            // Age distribution (SQLite compatible)
             $ageDistribution = $db->fetchAll("
                 SELECT 
                     CASE 
-                        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 18 THEN 'Under 18'
-                        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) BETWEEN 18 AND 24 THEN '18-24'
-                        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) BETWEEN 25 AND 34 THEN '25-34'
-                        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) BETWEEN 35 AND 44 THEN '35-44'
-                        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) BETWEEN 45 AND 54 THEN '45-54'
-                        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) BETWEEN 55 AND 64 THEN '55-64'
+                        WHEN CAST((julianday('now') - julianday(date_of_birth)) / 365.25 AS INTEGER) < 18 THEN 'Under 18'
+                        WHEN CAST((julianday('now') - julianday(date_of_birth)) / 365.25 AS INTEGER) BETWEEN 18 AND 24 THEN '18-24'
+                        WHEN CAST((julianday('now') - julianday(date_of_birth)) / 365.25 AS INTEGER) BETWEEN 25 AND 34 THEN '25-34'
+                        WHEN CAST((julianday('now') - julianday(date_of_birth)) / 365.25 AS INTEGER) BETWEEN 35 AND 44 THEN '35-44'
+                        WHEN CAST((julianday('now') - julianday(date_of_birth)) / 365.25 AS INTEGER) BETWEEN 45 AND 54 THEN '45-54'
+                        WHEN CAST((julianday('now') - julianday(date_of_birth)) / 365.25 AS INTEGER) BETWEEN 55 AND 64 THEN '55-64'
                         ELSE '65+'
                     END as age_group,
                     COUNT(*) as count
@@ -197,11 +197,11 @@ switch ($requestMethod) {
                     COUNT(DISTINCT cn.id) as case_notes
                 FROM users u
                 LEFT JOIN client_profiles cp ON u.id = cp.assigned_worker_id
-                LEFT JOIN orders o ON u.id = o.placed_by AND o.created_at BETWEEN :start_date AND :end_date
-                LEFT JOIN referrals r ON u.id = r.referred_by AND r.created_at BETWEEN :start_date AND :end_date
-                LEFT JOIN case_notes cn ON u.id = cn.created_by AND cn.created_at BETWEEN :start_date AND :end_date
+                LEFT JOIN orders o ON u.id = o.placed_by AND date(o.created_at) BETWEEN :start_date AND :end_date
+                LEFT JOIN referrals r ON u.id = r.referred_by AND date(r.created_at) BETWEEN :start_date AND :end_date
+                LEFT JOIN case_notes cn ON u.id = cn.created_by AND date(cn.created_at) BETWEEN :start_date AND :end_date
                 WHERE u.role = 'outreach_worker'
-                GROUP BY u.id
+                GROUP BY u.id, u.first_name, u.last_name
             ", ['start_date' => $startDate, 'end_date' => $endDate]);
             
             Response::success(['productivity' => $productivity]);
