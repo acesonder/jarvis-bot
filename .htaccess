@@ -1,0 +1,43 @@
+# Tweak Easy - Apache Configuration
+
+# Enable mod_rewrite
+RewriteEngine On
+
+# Prevent directory listing
+Options -Indexes
+
+# Security Headers
+Header set X-Frame-Options "SAMEORIGIN"
+Header set X-Content-Type-Options "nosniff"
+Header set X-XSS-Protection "1; mode=block"
+Header set Referrer-Policy "strict-origin-when-cross-origin"
+Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+# Force HTTPS (uncomment in production)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# API Routes
+RewriteRule ^api/(.*)$ api/index.php [QSA,L]
+
+# Protect sensitive files
+<FilesMatch "^(config\.php|\.env|\.git|\.htaccess)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# PHP Security Settings
+php_flag display_errors Off
+php_flag log_errors On
+php_value error_log /var/log/php_errors.log
+
+# File upload limits
+php_value upload_max_filesize 10M
+php_value post_max_size 10M
+php_value max_execution_time 60
+php_value max_input_time 60
+
+# Session security
+php_value session.cookie_httponly 1
+php_value session.cookie_secure 1
+php_value session.use_strict_mode 1
