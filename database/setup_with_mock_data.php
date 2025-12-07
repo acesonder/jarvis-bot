@@ -48,6 +48,12 @@ if (file_exists($dbPath)) {
     $choice = trim(fgets($handle));
     fclose($handle);
     
+    // Validate input
+    if (!in_array($choice, ['1', '2', '3'])) {
+        echo "Invalid choice. Setup cancelled.\n";
+        exit(1);
+    }
+    
     if ($choice === '2') {
         unlink($dbPath);
         echo "✓ Deleted existing database\n\n";

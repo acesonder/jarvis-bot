@@ -81,7 +81,15 @@ class MockDataGenerator {
     }
     
     private function randomDate($startDate, $endDate) {
-        $timestamp = mt_rand(strtotime($startDate), strtotime($endDate));
+        $start = strtotime($startDate);
+        $end = strtotime($endDate);
+        
+        // Validate date strings
+        if ($start === false || $end === false) {
+            throw new Exception("Invalid date string provided to randomDate()");
+        }
+        
+        $timestamp = mt_rand($start, $end);
         return date('Y-m-d H:i:s', $timestamp);
     }
     
@@ -374,8 +382,11 @@ class MockDataGenerator {
             
             // Add 1-5 items to each order
             $numItems = rand(1, 5);
-            $selectedProducts = array_rand(array_flip($this->productIds), min($numItems, count($this->productIds)));
-            if (!is_array($selectedProducts)) $selectedProducts = [$selectedProducts];
+            
+            // Randomly select products
+            $shuffled = $this->productIds;
+            shuffle($shuffled);
+            $selectedProducts = array_slice($shuffled, 0, min($numItems, count($this->productIds)));
             
             foreach ($selectedProducts as $productId) {
                 $quantity = rand(1, 20);

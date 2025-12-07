@@ -57,6 +57,11 @@ class APIValidator {
         ];
     }
     
+    /**
+     * Execute a single test case
+     * @param string $name Test name for display
+     * @param callable $callback Test function that returns bool
+     */
     private function test($name, $callback) {
         echo "Testing: $name... ";
         try {
@@ -73,6 +78,12 @@ class APIValidator {
         }
     }
     
+    /**
+     * Run all validation tests
+     * Executes comprehensive API endpoint testing including authentication,
+     * data retrieval, and security features
+     * @return bool True if all tests pass, false otherwise
+     */
     public function runTests() {
         echo "===========================================\n";
         echo "API Validation Test Suite\n";
