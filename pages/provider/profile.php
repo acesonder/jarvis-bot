@@ -178,7 +178,7 @@
                         </div>
                         <div class="form-group">
                             <label>Role</label>
-                            <input type="text" class="form-control" value="Provideristrator" disabled />
+                            <input type="text" class="form-control" value="Provider" disabled />
                         </div>
                     </div>
                 </div>
