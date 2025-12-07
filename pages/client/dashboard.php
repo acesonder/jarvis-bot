@@ -1,3 +1,11 @@
+<?php
+require_once __DIR__ . '/../../includes/auth.php';
+
+Session::start();
+$auth = new Auth();
+$auth->requireRole('client');
+$user = $auth->getCurrentUser();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -135,8 +143,8 @@
                 
                 <div class="user-menu" id="userMenu">
                     <button class="user-menu-btn">
-                        <div class="avatar">JD</div>
-                        <span class="user-name">John Doe</span>
+                        <div class="avatar"><?php echo strtoupper(substr($user['first_name'], 0, 1) . substr($user['last_name'], 0, 1)); ?></div>
+                        <span class="user-name"><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></span>
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                             <path d="M7 10l5 5 5-5z"/>
                         </svg>
@@ -169,7 +177,7 @@
         <!-- Dashboard Content -->
         <div class="dashboard-content">
             <div class="page-header">
-                <h1>Welcome back, John!</h1>
+                <h1>Welcome back, <?php echo htmlspecialchars($user['first_name']); ?>!</h1>
                 <p>Here's what's happening with your care plan today.</p>
             </div>
             

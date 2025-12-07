@@ -1,8 +1,17 @@
+<?php
+require_once __DIR__ . '/../../includes/auth.php';
+
+Session::start();
+$auth = new Auth();
+$auth->requireRole('client');
+$user = $auth->getCurrentUser();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?php echo Session::generateCSRFToken(); ?>">
     <title>Messages - Tweak Easy</title>
     <link rel="stylesheet" href="../../assets/css/main.css">
     <link rel="stylesheet" href="../../assets/css/dashboard.css">
@@ -38,38 +47,6 @@
                         <span>Dashboard</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="care-plan.php">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                        </svg>
-                        <span>Care Plan</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="assessments.php">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                        </svg>
-                        <span>Assessments</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="goals.php">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/>
-                        </svg>
-                        <span>Goals</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="orders.php">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                            <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-                        </svg>
-                        <span>Orders</span>
-                    </a>
-                </li>
                 <li class="nav-item active">
                     <a href="messages.php">
                         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
@@ -77,22 +54,6 @@
                         </svg>
                         <span>Messages</span>
                         <span class="nav-badge">3</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="appointments.php">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                            <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/>
-                        </svg>
-                        <span>Appointments</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="resources.php">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                        </svg>
-                        <span>Resources</span>
                     </a>
                 </li>
             </ul>
@@ -135,8 +96,8 @@
                 
                 <div class="user-menu" id="userMenu">
                     <button class="user-menu-btn">
-                        <div class="avatar">JD</div>
-                        <span class="user-name">John Doe</span>
+                        <div class="avatar"><?php echo strtoupper(substr($user['first_name'], 0, 1) . substr($user['last_name'], 0, 1)); ?></div>
+                        <span class="user-name"><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></span>
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                             <path d="M7 10l5 5 5-5z"/>
                         </svg>
@@ -166,286 +127,195 @@
             </div>
         </header>
         
-        <!-- Dashboard Content -->
+        <!-- Messages Content -->
         <div class="dashboard-content">
             <div class="page-header">
                 <h1>Messages</h1>
-                <p>Communicate with your care team</p>
+                <p>Communicate securely with your care team</p>
+                <button class="btn btn-primary" id="composeBtn" style="margin-left: auto;">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="margin-right: 8px;">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                    Compose New Message
+                </button>
             </div>
             
-            <!-- Quick Stats -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #48bb78, #38a169);">
-                        <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
-                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/>
-                        </svg>
+            <!-- Messages Layout: Inbox List + Conversation/Compose Area -->
+            <div style="display: grid; grid-template-columns: 380px 1fr; gap: 20px; height: calc(100vh - 200px);">
+                <!-- Messages Inbox List -->
+                <div class="dashboard-card" style="margin: 0; display: flex; flex-direction: column; height: 100%;">
+                    <div class="card-header" style="flex-shrink: 0; border-bottom: 1px solid var(--border-color);">
+                        <h3>Inbox</h3>
+                        <span class="nav-badge">3</span>
                     </div>
-                    <div class="stat-info">
-                        <span class="stat-value">3</span>
-                        <span class="stat-label">Active Goals</span>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #4299e1, #3182ce);">
-                        <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
-                            <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/>
-                        </svg>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value">2</span>
-                        <span class="stat-label">Upcoming Appointments</span>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #ed8936, #dd6b20);">
-                        <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
-                            <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1z"/>
-                        </svg>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value">1</span>
-                        <span class="stat-label">Pending Orders</span>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #9f7aea, #805ad5);">
-                        <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
-                            <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-                        </svg>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value">3</span>
-                        <span class="stat-label">Unread Messages</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Main Dashboard Grid -->
-            <div class="dashboard-grid">
-                <!-- Goals Progress -->
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h3>Goals Progress</h3>
-                        <a href="goals.php" class="card-link">View All</a>
-                    </div>
-                    <div class="card-body">
-                        <div class="goal-item">
-                            <div class="goal-info">
-                                <span class="goal-title">Complete housing application</span>
-                                <span class="goal-progress-text">75% complete</span>
+                    <div class="card-body" style="flex: 1; overflow-y: auto; padding: 0;">
+                        <div class="message-list">
+                            <div class="message-list-item unread active" data-conversation-id="1">
+                                <div class="avatar" style="background: linear-gradient(135deg, #4299e1, #3182ce);">SM</div>
+                                <div class="message-content">
+                                    <div class="message-header">
+                                        <span class="sender-name">Sarah Mitchell</span>
+                                        <span class="message-time">2h ago</span>
+                                    </div>
+                                    <p class="message-preview">Hi John, just following up on our last conversation about...</p>
+                                </div>
                             </div>
-                            <div class="progress">
-                                <div class="progress-bar" style="width: 75%; background: linear-gradient(90deg, #48bb78, #38a169);"></div>
+                            <div class="message-list-item unread" data-conversation-id="2">
+                                <div class="avatar" style="background: linear-gradient(135deg, #48bb78, #38a169);">CH</div>
+                                <div class="message-content">
+                                    <div class="message-header">
+                                        <span class="sender-name">Community Health</span>
+                                        <span class="message-time">5h ago</span>
+                                    </div>
+                                    <p class="message-preview">Your appointment confirmation for December 18th...</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="goal-item">
-                            <div class="goal-info">
-                                <span class="goal-title">Attend 4 support group meetings</span>
-                                <span class="goal-progress-text">50% complete</span>
+                            <div class="message-list-item unread" data-conversation-id="3">
+                                <div class="avatar" style="background: linear-gradient(135deg, #ed8936, #dd6b20);">DR</div>
+                                <div class="message-content">
+                                    <div class="message-header">
+                                        <span class="sender-name">Dr. Roberts</span>
+                                        <span class="message-time">1d ago</span>
+                                    </div>
+                                    <p class="message-preview">Please remember to take your medication as prescribed...</p>
+                                </div>
                             </div>
-                            <div class="progress">
-                                <div class="progress-bar" style="width: 50%; background: linear-gradient(90deg, #4299e1, #3182ce);"></div>
+                            <div class="message-list-item" data-conversation-id="4">
+                                <div class="avatar" style="background: linear-gradient(135deg, #9f7aea, #805ad5);">TE</div>
+                                <div class="message-content">
+                                    <div class="message-header">
+                                        <span class="sender-name">Tweak Easy Support</span>
+                                        <span class="message-time">2d ago</span>
+                                    </div>
+                                    <p class="message-preview">Welcome to Tweak Easy! Here are some tips to get started...</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="goal-item">
-                            <div class="goal-info">
-                                <span class="goal-title">Schedule medical checkup</span>
-                                <span class="goal-progress-text">25% complete</span>
-                            </div>
-                            <div class="progress">
-                                <div class="progress-bar" style="width: 25%; background: linear-gradient(90deg, #ed8936, #dd6b20);"></div>
+                            <div class="message-list-item" data-conversation-id="5">
+                                <div class="avatar" style="background: linear-gradient(135deg, #f56565, #e53e3e);">MJ</div>
+                                <div class="message-content">
+                                    <div class="message-header">
+                                        <span class="sender-name">Mary Johnson</span>
+                                        <span class="message-time">3d ago</span>
+                                    </div>
+                                    <p class="message-preview">Thank you for attending the group session today...</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Upcoming Appointments -->
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h3>Upcoming Appointments</h3>
-                        <a href="appointments.php" class="card-link">View All</a>
-                    </div>
-                    <div class="card-body">
-                        <div class="appointment-item">
-                            <div class="appointment-date">
-                                <span class="day">15</span>
-                                <span class="month">Dec</span>
-                            </div>
-                            <div class="appointment-info">
-                                <span class="appointment-title">Case Manager Check-in</span>
-                                <span class="appointment-time">
-                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-                                    </svg>
-                                    10:00 AM - Video Call
-                                </span>
-                            </div>
-                            <span class="badge badge-info">Confirmed</span>
+                <!-- Conversation/Compose Area -->
+                <div class="dashboard-card" id="conversationArea" style="margin: 0; display: flex; flex-direction: column; height: 100%;">
+                    <!-- Conversation Header -->
+                    <div class="card-header" style="flex-shrink: 0; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px;">
+                        <div class="avatar" style="background: linear-gradient(135deg, #4299e1, #3182ce); width: 40px; height: 40px;">SM</div>
+                        <div style="flex: 1;">
+                            <h3 style="margin: 0; font-size: 16px;">Sarah Mitchell</h3>
+                            <p style="margin: 0; font-size: 13px; opacity: 0.7;">Case Manager</p>
                         </div>
-                        <div class="appointment-item">
-                            <div class="appointment-date">
-                                <span class="day">18</span>
-                                <span class="month">Dec</span>
-                            </div>
-                            <div class="appointment-info">
-                                <span class="appointment-title">Naloxone Training</span>
-                                <span class="appointment-time">
-                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-                                    </svg>
-                                    2:00 PM - Community Center
-                                </span>
-                            </div>
-                            <span class="badge badge-warning">Pending</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Recent Messages -->
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h3>Recent Messages</h3>
-                        <a href="messages.php" class="card-link">View All</a>
-                    </div>
-                    <div class="card-body">
-                        <div class="message-item unread">
-                            <div class="avatar" style="background: linear-gradient(135deg, #4299e1, #3182ce);">SM</div>
-                            <div class="message-content">
-                                <div class="message-header">
-                                    <span class="sender-name">Sarah Mitchell</span>
-                                    <span class="message-time">2h ago</span>
-                                </div>
-                                <p class="message-preview">Hi John, just following up on our last conversation about...</p>
-                            </div>
-                        </div>
-                        <div class="message-item unread">
-                            <div class="avatar" style="background: linear-gradient(135deg, #48bb78, #38a169);">CH</div>
-                            <div class="message-content">
-                                <div class="message-header">
-                                    <span class="sender-name">Community Health</span>
-                                    <span class="message-time">5h ago</span>
-                                </div>
-                                <p class="message-preview">Your appointment confirmation for December 18th...</p>
-                            </div>
-                        </div>
-                        <div class="message-item">
-                            <div class="avatar" style="background: linear-gradient(135deg, #ed8936, #dd6b20);">TE</div>
-                            <div class="message-content">
-                                <div class="message-header">
-                                    <span class="sender-name">Tweak Easy Support</span>
-                                    <span class="message-time">1d ago</span>
-                                </div>
-                                <p class="message-preview">Welcome to Tweak Easy! Here are some tips to get started...</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Quick Order -->
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h3>Quick Order Supplies</h3>
-                        <a href="orders.php" class="card-link">Full Catalog</a>
-                    </div>
-                    <div class="card-body">
-                        <div class="quick-order-grid">
-                            <div class="supply-widget" style="--tile-color: #e74c3c;" data-product-id="1">
-                                <div class="supply-icon">
-                                    <svg viewBox="0 0 60 60" fill="white">
-                                        <rect x="25" y="5" width="10" height="50" rx="5"/>
-                                        <rect x="22" y="8" width="16" height="8" rx="2"/>
-                                    </svg>
-                                </div>
-                                <span class="supply-name">Syringes</span>
-                                <span class="supply-stock">500 in stock</span>
-                                <div class="order-bubble add-bubble">+</div>
-                                <div class="order-bubble remove-bubble">-</div>
-                                <div class="order-count">0</div>
-                            </div>
-                            <div class="supply-widget" style="--tile-color: #e67e22;" data-product-id="10">
-                                <div class="supply-icon">
-                                    <svg viewBox="0 0 60 60" fill="white">
-                                        <rect x="10" y="15" width="40" height="30" rx="5"/>
-                                        <path d="M25 25 L35 25 L35 35 L25 35 Z M28 22 L28 38 M22 30 L38 30" stroke="white" stroke-width="2" fill="none"/>
-                                    </svg>
-                                </div>
-                                <span class="supply-name">Naloxone Kit</span>
-                                <span class="supply-stock">50 in stock</span>
-                                <div class="order-bubble add-bubble">+</div>
-                                <div class="order-bubble remove-bubble">-</div>
-                                <div class="order-count">0</div>
-                            </div>
-                            <div class="supply-widget" style="--tile-color: #d35400;" data-product-id="11">
-                                <div class="supply-icon">
-                                    <svg viewBox="0 0 60 60" fill="white">
-                                        <rect x="15" y="25" width="30" height="20" rx="2"/>
-                                        <line x1="20" y1="30" x2="40" y2="30" stroke="rgba(0,0,0,0.3)" stroke-width="2"/>
-                                        <line x1="20" y1="35" x2="35" y2="35" stroke="rgba(0,0,0,0.3)" stroke-width="2"/>
-                                    </svg>
-                                </div>
-                                <span class="supply-name">Test Strips</span>
-                                <span class="supply-stock">200 in stock</span>
-                                <div class="order-bubble add-bubble">+</div>
-                                <div class="order-bubble remove-bubble">-</div>
-                                <div class="order-count">0</div>
-                            </div>
-                            <div class="supply-widget" style="--tile-color: #1abc9c;" data-product-id="7">
-                                <div class="supply-icon">
-                                    <svg viewBox="0 0 60 60" fill="white">
-                                        <rect x="15" y="20" width="30" height="25" rx="3"/>
-                                        <path d="M20 20 L20 15 L40 15 L40 20"/>
-                                    </svg>
-                                </div>
-                                <span class="supply-name">Alcohol Swabs</span>
-                                <span class="supply-stock">1000 in stock</span>
-                                <div class="order-bubble add-bubble">+</div>
-                                <div class="order-bubble remove-bubble">-</div>
-                                <div class="order-count">0</div>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary btn-block mt-lg" id="placeOrderBtn" disabled>
-                            Place Order
+                        <button class="btn btn-secondary btn-sm">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
                         </button>
                     </div>
+                    
+                    <!-- Messages Thread -->
+                    <div class="card-body" id="messageThread" style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+                        <!-- Received Message -->
+                        <div class="message-bubble received">
+                            <div class="message-bubble-header">
+                                <span class="message-sender">Sarah Mitchell</span>
+                                <span class="message-timestamp">Dec 7, 10:30 AM</span>
+                            </div>
+                            <div class="message-bubble-content">
+                                Hi John, just following up on our last conversation about your housing application. Have you had a chance to gather the required documents?
+                            </div>
+                        </div>
+                        
+                        <!-- Sent Message -->
+                        <div class="message-bubble sent">
+                            <div class="message-bubble-header">
+                                <span class="message-sender">You</span>
+                                <span class="message-timestamp">Dec 7, 10:45 AM</span>
+                            </div>
+                            <div class="message-bubble-content">
+                                Yes, I've collected most of them. I'm still waiting on my employment verification letter, but should have it by tomorrow.
+                            </div>
+                        </div>
+                        
+                        <!-- Received Message -->
+                        <div class="message-bubble received">
+                            <div class="message-bubble-header">
+                                <span class="message-sender">Sarah Mitchell</span>
+                                <span class="message-timestamp">Dec 7, 10:50 AM</span>
+                            </div>
+                            <div class="message-bubble-content">
+                                That's great! Once you have everything, we can submit the application together. Would you like to schedule a time to meet this week?
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Message Reply Input -->
+                    <div class="card-footer" style="flex-shrink: 0; border-top: 1px solid var(--border-color); padding: 16px;">
+                        <form id="replyForm" style="display: flex; gap: 12px; align-items: flex-end;">
+                            <div style="flex: 1;">
+                                <textarea id="messageInput" class="form-control" rows="2" placeholder="Type your message..." style="resize: none;"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
                 </div>
-            </div>
-            
-            <!-- Resource Quick Links -->
-            <div class="resource-section">
-                <h3>Quick Resources</h3>
-                <div class="resource-grid">
-                    <a href="#" class="resource-card emergency">
-                        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                        </svg>
-                        <span>Crisis Hotline</span>
-                        <small>1-800-273-8255</small>
-                    </a>
-                    <a href="resources.php#health" class="resource-card">
-                        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
-                            <path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/>
-                        </svg>
-                        <span>Health Services</span>
-                        <small>Find nearby clinics</small>
-                    </a>
-                    <a href="resources.php#housing" class="resource-card">
-                        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
-                            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                        </svg>
-                        <span>Housing Support</span>
-                        <small>Shelters & programs</small>
-                    </a>
-                    <a href="resources.php#food" class="resource-card">
-                        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
-                            <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
-                        </svg>
-                        <span>Food Resources</span>
-                        <small>Food banks & meals</small>
-                    </a>
+                
+                <!-- Compose New Message Area (Hidden by default) -->
+                <div class="dashboard-card" id="composeArea" style="margin: 0; display: none; flex-direction: column; height: 100%;">
+                    <div class="card-header" style="flex-shrink: 0; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                        <h3 style="margin: 0;">New Message</h3>
+                        <button class="btn btn-secondary btn-sm" id="closeComposeBtn">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="card-body" style="flex: 1; overflow-y: auto; padding: 20px;">
+                        <form id="composeForm">
+                            <div class="form-group">
+                                <label for="recipientSelect">To:</label>
+                                <select id="recipientSelect" class="form-control" required>
+                                    <option value="">Select recipient...</option>
+                                    <option value="1">Sarah Mitchell - Case Manager</option>
+                                    <option value="2">Dr. Roberts - Physician</option>
+                                    <option value="3">Mary Johnson - Support Coordinator</option>
+                                    <option value="4">Community Health Team</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="subjectInput">Subject:</label>
+                                <input type="text" id="subjectInput" class="form-control" placeholder="Enter subject" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="composeMessageInput">Message:</label>
+                                <textarea id="composeMessageInput" class="form-control" rows="12" placeholder="Type your message..." required></textarea>
+                            </div>
+                            
+                            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                                <button type="button" class="btn btn-secondary" id="cancelComposeBtn">Cancel</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="margin-right: 8px;">
+                                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                                    </svg>
+                                    Send Message
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -455,7 +325,425 @@
         <span class="theme-icon">🌙</span>
     </div>
     
+    <style>
+        /* Message List Styles */
+        .message-list {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message-list-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.2s;
+        }
+        
+        .message-list-item:hover {
+            background-color: var(--hover-bg);
+        }
+        
+        .message-list-item.active {
+            background-color: rgba(102, 126, 234, 0.1);
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .message-list-item.unread {
+            background-color: rgba(102, 126, 234, 0.05);
+        }
+        
+        .message-list-item.unread .sender-name {
+            font-weight: 600;
+        }
+        
+        .message-list-item .avatar {
+            width: 45px;
+            height: 45px;
+            flex-shrink: 0;
+        }
+        
+        .message-list-item .message-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .message-list-item .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        
+        .message-list-item .sender-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .message-list-item .message-time {
+            font-size: 12px;
+            opacity: 0.6;
+            white-space: nowrap;
+        }
+        
+        .message-list-item .message-preview {
+            font-size: 13px;
+            opacity: 0.7;
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Message Bubble Styles */
+        .message-bubble {
+            max-width: 70%;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .message-bubble.received {
+            align-self: flex-start;
+        }
+        
+        .message-bubble.sent {
+            align-self: flex-end;
+        }
+        
+        .message-bubble-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 0 4px;
+        }
+        
+        .message-sender {
+            font-size: 12px;
+            font-weight: 600;
+            opacity: 0.7;
+        }
+        
+        .message-timestamp {
+            font-size: 11px;
+            opacity: 0.5;
+        }
+        
+        .message-bubble-content {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .message-bubble.received .message-bubble-content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message-bubble.sent .message-bubble-content {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            transition: border-color 0.2s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        select.form-control {
+            cursor: pointer;
+        }
+        
+        textarea.form-control {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        
+        .card-footer {
+            background-color: var(--card-bg);
+        }
+    </style>
+    
+    <script>
+        // Pass user ID to JavaScript
+        window.currentUserId = <?php echo $user['id']; ?>;
+    </script>
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/dashboard.js"></script>
+    <script src="../../assets/js/messages.js"></script>
+    
+    <script>
+        // Messages Page Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const composeBtn = document.getElementById('composeBtn');
+            const closeComposeBtn = document.getElementById('closeComposeBtn');
+            const cancelComposeBtn = document.getElementById('cancelComposeBtn');
+            const composeArea = document.getElementById('composeArea');
+            const conversationArea = document.getElementById('conversationArea');
+            const composeForm = document.getElementById('composeForm');
+            const replyForm = document.getElementById('replyForm');
+            const messageListItems = document.querySelectorAll('.message-list-item');
+            
+            // Show compose new message
+            composeBtn.addEventListener('click', function() {
+                conversationArea.style.display = 'none';
+                composeArea.style.display = 'flex';
+                document.querySelectorAll('.message-list-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+            });
+            
+            // Close compose area
+            function closeCompose() {
+                composeArea.style.display = 'none';
+                conversationArea.style.display = 'flex';
+                composeForm.reset();
+                // Reactivate first conversation
+                if (messageListItems.length > 0) {
+                    messageListItems[0].classList.add('active');
+                }
+            }
+            
+            closeComposeBtn.addEventListener('click', closeCompose);
+            cancelComposeBtn.addEventListener('click', closeCompose);
+            
+            // Handle compose form submission
+            composeForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const recipient = document.getElementById('recipientSelect').value;
+                const subject = document.getElementById('subjectInput').value;
+                const message = document.getElementById('composeMessageInput').value;
+                
+                if (!recipient || !subject || !message) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                // TODO: Send message via API
+                console.log('Sending message:', { recipient, subject, message });
+                
+                alert('Message sent successfully!');
+                closeCompose();
+            });
+            
+            // Handle reply form submission
+            replyForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const messageInput = document.getElementById('messageInput');
+                const message = messageInput.value.trim();
+                
+                if (!message) {
+                    return;
+                }
+                
+                // TODO: Send reply via API
+                console.log('Sending reply:', message);
+                
+                // Add message to thread (demo)
+                const messageThread = document.getElementById('messageThread');
+                const newMessage = document.createElement('div');
+                newMessage.className = 'message-bubble sent';
+                
+                const now = new Date();
+                const timeStr = now.toLocaleString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric', 
+                    hour: 'numeric', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
+                
+                newMessage.innerHTML = `
+                    <div class="message-bubble-header">
+                        <span class="message-sender">You</span>
+                        <span class="message-timestamp">${timeStr}</span>
+                    </div>
+                    <div class="message-bubble-content">
+                        ${message}
+                    </div>
+                `;
+                
+                messageThread.appendChild(newMessage);
+                messageThread.scrollTop = messageThread.scrollHeight;
+                
+                messageInput.value = '';
+            });
+            
+            // Mock conversation data
+            const conversations = {
+                '1': {
+                    name: 'Sarah Mitchell',
+                    role: 'Case Manager',
+                    avatar: 'SM',
+                    avatarBg: 'linear-gradient(135deg, #4299e1, #3182ce)',
+                    messages: [
+                        { type: 'received', sender: 'Sarah Mitchell', time: 'Dec 7, 10:30 AM', content: 'Hi John, just following up on our last conversation about your housing application. Have you had a chance to gather the required documents?' },
+                        { type: 'sent', sender: 'You', time: 'Dec 7, 10:45 AM', content: 'Yes, I\'ve collected most of them. I\'m still waiting on my employment verification letter, but should have it by tomorrow.' },
+                        { type: 'received', sender: 'Sarah Mitchell', time: 'Dec 7, 10:50 AM', content: 'That\'s great! Once you have everything, we can submit the application together. Would you like to schedule a time to meet this week?' }
+                    ]
+                },
+                '2': {
+                    name: 'Community Health',
+                    role: 'Healthcare Team',
+                    avatar: 'CH',
+                    avatarBg: 'linear-gradient(135deg, #48bb78, #38a169)',
+                    messages: [
+                        { type: 'received', sender: 'Community Health', time: 'Dec 7, 7:15 AM', content: 'Your appointment confirmation for December 18th at 2:00 PM has been scheduled. Please arrive 10 minutes early.' },
+                        { type: 'sent', sender: 'You', time: 'Dec 7, 7:30 AM', content: 'Thank you! I\'ll be there. Is there anything I need to bring?' },
+                        { type: 'received', sender: 'Community Health', time: 'Dec 7, 7:45 AM', content: 'Please bring your ID and insurance card. We look forward to seeing you!' }
+                    ]
+                },
+                '3': {
+                    name: 'Dr. Roberts',
+                    role: 'Physician',
+                    avatar: 'DR',
+                    avatarBg: 'linear-gradient(135deg, #ed8936, #dd6b20)',
+                    messages: [
+                        { type: 'received', sender: 'Dr. Roberts', time: 'Dec 6, 2:00 PM', content: 'Please remember to take your medication as prescribed - twice daily with meals.' },
+                        { type: 'sent', sender: 'You', time: 'Dec 6, 2:15 PM', content: 'Will do, thank you! Should I schedule a follow-up appointment?' },
+                        { type: 'received', sender: 'Dr. Roberts', time: 'Dec 6, 2:30 PM', content: 'Yes, please schedule one for next month. Contact the office at your convenience.' },
+                        { type: 'sent', sender: 'You', time: 'Dec 6, 2:35 PM', content: 'Perfect, I\'ll call them tomorrow.' }
+                    ]
+                },
+                '4': {
+                    name: 'Tweak Easy Support',
+                    role: 'Support Team',
+                    avatar: 'TE',
+                    avatarBg: 'linear-gradient(135deg, #9f7aea, #805ad5)',
+                    messages: [
+                        { type: 'received', sender: 'Tweak Easy Support', time: 'Dec 5, 9:00 AM', content: 'Welcome to Tweak Easy! Here are some tips to get started with our platform.' },
+                        { type: 'received', sender: 'Tweak Easy Support', time: 'Dec 5, 9:01 AM', content: 'You can manage your appointments, communicate with your care team, and order supplies all in one place. If you need any help, feel free to reach out!' },
+                        { type: 'sent', sender: 'You', time: 'Dec 5, 10:30 AM', content: 'Thank you! This looks great.' }
+                    ]
+                },
+                '5': {
+                    name: 'Mary Johnson',
+                    role: 'Support Coordinator',
+                    avatar: 'MJ',
+                    avatarBg: 'linear-gradient(135deg, #f56565, #e53e3e)',
+                    messages: [
+                        { type: 'received', sender: 'Mary Johnson', time: 'Dec 4, 4:00 PM', content: 'Thank you for attending the group session today. It was great to see you participating!' },
+                        { type: 'sent', sender: 'You', time: 'Dec 4, 4:15 PM', content: 'Thanks! I really enjoyed it. When is the next session?' },
+                        { type: 'received', sender: 'Mary Johnson', time: 'Dec 4, 4:20 PM', content: 'The next session is scheduled for December 11th at 3:00 PM. Hope to see you there!' },
+                        { type: 'sent', sender: 'You', time: 'Dec 4, 4:25 PM', content: 'I\'ll be there. Thanks for letting me know!' }
+                    ]
+                }
+            };
+            
+            // Function to load conversation
+            function loadConversation(conversationId) {
+                const conversation = conversations[conversationId];
+                if (!conversation) return;
+                
+                const messageThread = document.getElementById('messageThread');
+                const conversationHeader = conversationArea.querySelector('.card-header');
+                
+                // Update header
+                const headerAvatar = conversationHeader.querySelector('.avatar');
+                const headerTitle = conversationHeader.querySelector('h3');
+                const headerSubtitle = conversationHeader.querySelector('p');
+                
+                if (headerAvatar) {
+                    headerAvatar.style.background = conversation.avatarBg;
+                    headerAvatar.textContent = conversation.avatar;
+                }
+                
+                if (headerTitle) {
+                    headerTitle.textContent = conversation.name;
+                }
+                
+                if (headerSubtitle) {
+                    headerSubtitle.textContent = conversation.role;
+                }
+                
+                // Clear existing messages
+                messageThread.innerHTML = '';
+                
+                // Add messages
+                conversation.messages.forEach(msg => {
+                    const messageBubble = document.createElement('div');
+                    messageBubble.className = `message-bubble ${msg.type}`;
+                    messageBubble.innerHTML = `
+                        <div class="message-bubble-header">
+                            <span class="message-sender">${msg.sender}</span>
+                            <span class="message-timestamp">${msg.time}</span>
+                        </div>
+                        <div class="message-bubble-content">
+                            ${msg.content}
+                        </div>
+                    `;
+                    messageThread.appendChild(messageBubble);
+                });
+                
+                // Scroll to bottom
+                messageThread.scrollTop = messageThread.scrollHeight;
+            }
+            
+            // Handle conversation selection
+            messageListItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Hide compose area if showing
+                    composeArea.style.display = 'none';
+                    conversationArea.style.display = 'flex';
+                    
+                    // Remove active class from all items
+                    messageListItems.forEach(i => i.classList.remove('active'));
+                    
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Remove unread status
+                    this.classList.remove('unread');
+                    
+                    const conversationId = this.getAttribute('data-conversation-id');
+                    
+                    // Load conversation
+                    loadConversation(conversationId);
+                });
+            });
+            
+            // Auto-resize message input
+            const messageInput = document.getElementById('messageInput');
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+            });
+        });
+    </script>
 </body>
 </html>
