@@ -13,9 +13,7 @@ $auth->requireRole('admin');
 
 // Get request method
 $requestMethod = $_SERVER['REQUEST_METHOD'];
-$requestUri = $_SERVER['REQUEST_URI'];
-$pathParts = explode('/', trim(parse_url($requestUri, PHP_URL_PATH), '/'));
-$action = $pathParts[2] ?? 'stats';
+$action = $_GET['action'] ?? $action ?? 'stats';
 
 switch ($requestMethod) {
     case 'GET':
