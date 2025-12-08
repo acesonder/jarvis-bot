@@ -10,7 +10,7 @@ $db = Database::getInstance();
 
 // Get request method and action
 $requestMethod = $_SERVER['REQUEST_METHOD'];
-$action = $_GET['action'] ?? $action ?? 'login';
+$action = $_GET['action'] ?? 'login';
 
 // Rate limiting check
 $rateLimiter = new RateLimiter();
