@@ -1,3 +1,11 @@
+<?php
+require_once __DIR__ . '/../../includes/auth.php';
+
+Session::start();
+$auth = new Auth();
+$auth->requireRole('admin');
+$user = $auth->getCurrentUser();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -160,7 +168,7 @@
             <div class="dashboard-card">
                 <div class="card-header">
                     <h3>All Users</h3>
-                    <button class="btn btn-primary">Add New User</button>
+                    <button class="btn btn-primary" id="addUserBtn">Add New User</button>
                 </div>
                 <div class="card-body">
                     <div class="table-wrapper">
@@ -175,41 +183,136 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="users-table">
                                 <tr>
-                                    <td>
-                                        <div class="user-cell">
-                                            <div class="avatar" style="background: linear-gradient(135deg, #48bb78, #38a169);">JD</div>
-                                            <span>John Doe</span>
-                                        </div>
-                                    </td>
-                                    <td>john.doe@example.com</td>
-                                    <td><span class="badge badge-success">Client</span></td>
-                                    <td><span class="status-dot active"></span> Active</td>
-                                    <td>Dec 10, 2024</td>
-                                    <td>
-                                        <button class="btn btn-sm">Edit</button>
-                                        <button class="btn btn-sm">Disable</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="user-cell">
-                                            <div class="avatar" style="background: linear-gradient(135deg, #4299e1, #3182ce);">SM</div>
-                                            <span>Sarah Mitchell</span>
-                                        </div>
-                                    </td>
-                                    <td>sarah.m@example.com</td>
-                                    <td><span class="badge badge-info">Worker</span></td>
-                                    <td><span class="status-dot active"></span> Active</td>
-                                    <td>Dec 8, 2024</td>
-                                    <td>
-                                        <button class="btn btn-sm">Edit</button>
-                                        <button class="btn btn-sm">Disable</button>
-                                    </td>
+                                    <td colspan="6" style="text-align: center;">Loading...</td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Add User Modal -->
+            <div id="addUserModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Add New User</h3>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addUserForm">
+                            <div class="form-group">
+                                <label for="add-username">Username *</label>
+                                <input type="text" id="add-username" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="add-email">Email *</label>
+                                <input type="email" id="add-email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="add-password">Password *</label>
+                                <input type="password" id="add-password" name="password" required>
+                                <small>Must be at least 8 characters with uppercase, lowercase, number and special character</small>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="add-first-name">First Name *</label>
+                                    <input type="text" id="add-first-name" name="first_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="add-last-name">Last Name *</label>
+                                    <input type="text" id="add-last-name" name="last_name" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="add-phone">Phone</label>
+                                <input type="tel" id="add-phone" name="phone">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="add-role">Role *</label>
+                                    <select id="add-role" name="role" required>
+                                        <option value="client">Client</option>
+                                        <option value="outreach_worker">Outreach Worker</option>
+                                        <option value="service_provider">Service Provider</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="add-status">Status *</label>
+                                    <select id="add-status" name="status" required>
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Create User</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Edit User Modal -->
+            <div id="editUserModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Edit User</h3>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editUserForm">
+                            <input type="hidden" id="edit-user-id" name="user_id">
+                            <div class="form-group">
+                                <label for="edit-email">Email *</label>
+                                <input type="email" id="edit-email" name="email" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="edit-first-name">First Name *</label>
+                                    <input type="text" id="edit-first-name" name="first_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-last-name">Last Name *</label>
+                                    <input type="text" id="edit-last-name" name="last_name" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-phone">Phone</label>
+                                <input type="tel" id="edit-phone" name="phone">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-password">New Password (leave blank to keep current)</label>
+                                <input type="password" id="edit-password" name="password">
+                                <small>Must be at least 8 characters with uppercase, lowercase, number and special character</small>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="edit-role">Role *</label>
+                                    <select id="edit-role" name="role" required>
+                                        <option value="client">Client</option>
+                                        <option value="outreach_worker">Outreach Worker</option>
+                                        <option value="service_provider">Service Provider</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-status">Status *</label>
+                                    <select id="edit-status" name="status" required>
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                        <option value="suspended">Suspended</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Update User</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -222,5 +325,6 @@
     
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/dashboard.js"></script>
+    <script src="../../assets/js/admin-users.js"></script>
 </body>
 </html>
