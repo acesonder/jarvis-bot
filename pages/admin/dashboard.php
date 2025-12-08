@@ -1,3 +1,11 @@
+<?php
+require_once __DIR__ . '/../../includes/auth.php';
+
+Session::start();
+$auth = new Auth();
+$auth->requireRole('admin');
+$user = $auth->getCurrentUser();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -165,7 +173,7 @@
                         </svg>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">523</span>
+                        <span class="stat-value" id="total-users">0</span>
                         <span class="stat-label">Total Users</span>
                     </div>
                 </div>
@@ -177,7 +185,7 @@
                         </svg>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">1,247</span>
+                        <span class="stat-value" id="orders-month">0</span>
                         <span class="stat-label">Orders This Month</span>
                     </div>
                 </div>
@@ -189,7 +197,7 @@
                         </svg>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">89</span>
+                        <span class="stat-value" id="active-referrals">0</span>
                         <span class="stat-label">Active Referrals</span>
                     </div>
                 </div>
@@ -201,7 +209,7 @@
                         </svg>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">15,432</span>
+                        <span class="stat-value" id="supplies-distributed">0</span>
                         <span class="stat-label">Supplies Distributed</span>
                     </div>
                 </div>
@@ -276,39 +284,9 @@
                                         <th>Joined</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="recent-users-table">
                                     <tr>
-                                        <td>
-                                            <div class="user-cell">
-                                                <div class="avatar" style="background: linear-gradient(135deg, #48bb78, #38a169);">JD</div>
-                                                <span>John Doe</span>
-                                            </div>
-                                        </td>
-                                        <td><span class="badge badge-success">Client</span></td>
-                                        <td><span class="status-dot active"></span> Active</td>
-                                        <td>Dec 10, 2024</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="user-cell">
-                                                <div class="avatar" style="background: linear-gradient(135deg, #4299e1, #3182ce);">SM</div>
-                                                <span>Sarah Mitchell</span>
-                                            </div>
-                                        </td>
-                                        <td><span class="badge badge-info">Worker</span></td>
-                                        <td><span class="status-dot active"></span> Active</td>
-                                        <td>Dec 8, 2024</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="user-cell">
-                                                <div class="avatar" style="background: linear-gradient(135deg, #9f7aea, #805ad5);">CH</div>
-                                                <span>Community Health</span>
-                                            </div>
-                                        </td>
-                                        <td><span class="badge badge-primary">Provider</span></td>
-                                        <td><span class="status-dot active"></span> Active</td>
-                                        <td>Dec 5, 2024</td>
+                                        <td colspan="4" style="text-align: center;">Loading...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -422,5 +400,6 @@
     
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/dashboard.js"></script>
+    <script src="../../assets/js/admin-dashboard.js"></script>
 </body>
 </html>

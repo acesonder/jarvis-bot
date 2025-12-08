@@ -8,6 +8,10 @@ require_once __DIR__ . '/../../includes/auth.php';
 $auth = new Auth();
 $db = Database::getInstance();
 
+// Get request method and action
+$requestMethod = $_SERVER['REQUEST_METHOD'];
+$action = $_GET['action'] ?? 'login';
+
 // Rate limiting check
 $rateLimiter = new RateLimiter();
 
